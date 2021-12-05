@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd"
+         bootstrap="tests/tests_bootstrap.php"
+         cacheResultFile=".phpunit.cache/test-results"
+         executionOrder="depends,defects"
+         forceCoversAnnotation="true"
+         beStrictAboutCoversAnnotation="true"
+         beStrictAboutOutputDuringTests="true"
+         beStrictAboutTodoAnnotatedTests="true"
+         failOnRisky="true"
+         failOnWarning="true"
+         verbose="true">
+
+    <php>
+        <ini name="error_reporting" value="-1"/>
+
+        <!-- ###+ ResultsDoctrine -->
+            <!-- env name="DATABASE_HOST" value="127.0.0.1"/ -->
+            <env name="DATABASE_NAME" value="miw_results_tests"/>
+            <!-- env name="DATABASE_PORT" value="3306"/ -->
+            <env name="DATABASE_USER" value="DATABASE_USER"/>      <!-- CHANGE!!! -->
+            <env name="DATABASE_PASSWD" value="DATABASE_PASSWD"/>  <!-- CHANGE!!! -->
+            <!-- env name="DATABASE_DRIVER" value="pdo_mysql"/ -->
+            <!-- env name="DATABASE_CHARSET" value="UTF8"/ -->
+
+            <!-- User ADMIN username/password -->
+            <env name="ADMIN_USER_NAME" value="u18"/>              <!-- CHANGE!!! -->
+            <env name="ADMIN_USER_EMAIL" value="admin-miw@example.com"/>
+            <env name="ADMIN_USER_PASSWD" value="*u18*"/>          <!-- CHANGE!!! -->
+
+            <env name="ENTITY_DIR" value="./src/Entity/"/>
+        <!-- ###- ResultsDoctrine -->
+    </php>
+
+    <testsuites>
+        <testsuite name="MiW Results testing">
+            <directory>tests</directory>
+        </testsuite>
+    </testsuites>
+
+    <coverage cacheDirectory=".phpunit.cache/code-coverage"
+              processUncoveredFiles="true">
+        <include>
+            <directory suffix=".php">src</directory>
+        </include>
+        <exclude>
+            <directory>./src/scripts</directory>
+            <directory>./tests/</directory>
+            <directory>./bin/</directory>
+            <directory>./vendor/</directory>
+            <file>./src/Utility/Utils.php</file>
+        </exclude>
+    </coverage>
+</phpunit>
