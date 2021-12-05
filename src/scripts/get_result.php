@@ -42,14 +42,14 @@ if (in_array('--json', $argv, true)) {
     echo json_encode($result, JSON_PRETTY_PRINT);
 } else {
     echo PHP_EOL . sprintf(
-            '  %2s: %80s %30s %7s' . PHP_EOL,
-            'Id', 'User:', 'Result:', 'Time:'
+            '  %2s: %22s %30s %7s' . PHP_EOL,
+            'Id', 'Username:', 'Result:', 'Time:'
         );
     /* @var Result $result */
     echo sprintf(
-        '- %2d: %80s %30s %7s',
+        '- %2d: %22s %30s %7s',
         $result->getId(),
-        $result->getUser(),
+        $result->getUser()->getUsername(),
         $result->getResult(),
         $result->getTime()->format("c")
     ),

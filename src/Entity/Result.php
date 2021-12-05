@@ -128,6 +128,30 @@ class Result implements JsonSerializable
     }
 
     /**
+     * @param int $result
+     */
+    public function setResult(int $result): void
+    {
+        $this->result = $result;
+    }
+
+    /**
+     * @param User|null $user
+     */
+    public function setUser(?User $user): void
+    {
+        $this->user = $user;
+    }
+
+    /**
+     * @param DateTime|null $time
+     */
+    public function setTime(?DateTime $time): void
+    {
+        $this->time = $time;
+    }
+
+    /**
      * Implements __toString()
      *
      * @return string
