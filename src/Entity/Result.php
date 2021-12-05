@@ -104,6 +104,30 @@ class Result implements JsonSerializable
     }
 
     /**
+     * @return User
+     */
+    public function getUser(): User
+    {
+        return $this->user;
+    }
+
+    /**
+     * @return int
+     */
+    public function getResult(): int
+    {
+        return $this->result;
+    }
+
+    /**
+     * @return DateTime
+     */
+    public function getTime(): DateTime
+    {
+        return $this->time;
+    }
+
+    /**
      * Implements __toString()
      *
      * @return string
