@@ -59,6 +59,14 @@ ruta_result_list:
     methods:
         - GET
 
+ruta_create_result_form:
+    path:     /results/create-form
+    controller: 'formCrearResultado'
+    defaults:
+        name: _default_
+    methods:
+        - GET
+
 ruta_result:
     path:     /results/{name}
     controller: 'funcionResultado'
@@ -67,10 +75,9 @@ ruta_result:
     methods:
         - GET
 
-
-ruta_create_result_form:
-    path:     /results/create-form
-    controller: 'funcionResultado'
+ruta_create_result:
+    path:     /results
+    controller: 'funcionCrearResultado'
     defaults:
         name: _default_
     methods:

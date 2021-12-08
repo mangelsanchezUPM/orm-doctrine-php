@@ -27,7 +27,8 @@ function funcionHomePage()
 ____MARCA_FIN;
 }
 
-function volverInicio() {
+function volverInicio()
+{
     global $routes;
 
     $ruta_inicio = $routes->get('ruta_raíz')->getPath();
@@ -119,7 +120,6 @@ function funcionCrearUsuario()
     $entityManager = DoctrineConnector::getEntityManager();
     insertarUsuario($entityManager, new User());
     volverInicio();
-
 }
 
 function formModificarUsuario(string $name)
@@ -218,11 +218,38 @@ function funcionResultados()
 {
     $entityManager = DoctrineConnector::getEntityManager();
 
-    $resultRepository = $entityManager->getRepository(Result::class);
-    $results = $resultRepository->findAll();
-    var_dump($results);
-    volverInicio();
+    $resultsRepository = $entityManager->getRepository(Result::class);
+    $results = $resultsRepository->findAll();
+    echo "<table>
+            <tr>
+                <th><label>Resultado</label></th>
+                <th><label>Usuario</label></th>
+                <th><label>Fecha</label></th>
+                <th colspan='3'><label>Operaciones</label></th>
+            </tr>";
+    foreach ($results as $result) {
+        $resultName = $result->getResult();
+        $username = $result->getUser()->getUsername();
+        $time = $result->getTime()->format("c");
+        $url = '/results/' . urlencode($resultName);
 
+        echo <<< ____MARCA_FIN
+                <tr>
+                    <td><label>$resultName</label></td>
+                    <td><label><a href="/users/$username">$username</a></label></td> 
+                    <td><label>$time</label></td> 
+                    <td><a href="$url">Ver Detalle</a></td>
+                    <td><a href="$url/delete">Eliminar</a></td>
+                    <td><a href="$url/update-form">Modificar</a></td>
+                </tr>
+    ____MARCA_FIN;
+    }
+    global $routes;
+
+    $rutaFormCrearResultado = $routes->get('ruta_create_result_form')->getPath();
+    echo "</table>";
+    echo "<a href='$rutaFormCrearResultado'>Insertar nuevo resultado</a>";
+    volverInicio();
 }
 
 function funcionResultado(string $result)
@@ -230,36 +257,49 @@ function funcionResultado(string $result)
     $entityManager = DoctrineConnector::getEntityManager();
     echo "$result";
     $resultRepository = $entityManager->getRepository(Result::class);
-    $results = $resultRepository->findBy(['result' => $result]);
+    $results = $resultRepository->findOneBy(['result' => $result]);
     var_dump($results);
     volverInicio();
-
 }
 
 function formCrearResultado()
 {
     global $routes;
-    $rutaFormCrearUsuario = $routes->get('ruta_create_user')->getPath();
+    $rutaCrearResultado = $routes->get('ruta_create_result')->getPath();
+
+    $entityManager = DoctrineConnector::getEntityManager();
+    $userRepository = $entityManager->getRepository(User::class);
+    $users = $userRepository->findAll();
 
     echo <<< ____MARCA_FIN
-    
-    <form method="post" action="$rutaFormCrearUsuario">
-        <h2>Creación de usuario</h2>
+    <form method="post" action="$rutaCrearResultado">
+        <h2>Creación de resultado</h2>
         <table>
-            <tr><td><label>Nombre de usuario: </label></td> 
-                <td><input type="text" name="username" required></td></tr>
-            <tr><td><label>Email: </label></td> 
-                <td><input type="email" name="email" required></td></tr>
-            <tr><td><label>Contraseña: </label></td>
-                <td><input type="password" name="password" required></td></tr>
-            <tr><td><label>Habilitado: </label></td> 
-                <td><input type="checkbox" name="enabled" checked></td></tr>
-            <tr><td><label>Es Admin: </label></td> 
-                <td><input type="checkbox" name="isAdmin"></td></tr>
-            <tr><td colspan="2"><button type="submit">Crear</button></td></tr>
-        </table>
-    </form>
+            <tr><td><label>Número de resultado</label></td> 
+                <td><input type="number" name="result" required></td></tr>
+            <tr><td><label>Usuario: </label></td> 
+                <td><select name="user">
 ____MARCA_FIN;
+    foreach ($users as $user) {
+        $username = $user->getUsername();
+        echo "<option value='$username'>$username</option>";
+    }
+    echo <<< ____MARCA_FIN
+            </select></td></tr>
+        <tr>
+            <td colspan="2">
+                <button type="submit">Insertar</button>
+            </td>
+        </tr>
+    </table>
+   </form>
+____MARCA_FIN;
+}
+
+function funcionCrearResultado() {
+    $entityManager = DoctrineConnector::getEntityManager();
+    insertarResultado($entityManager);
+    volverInicio();
 }
 
 function funcionBorrarResultado(string $name)
@@ -274,5 +314,25 @@ function funcionBorrarResultado(string $name)
         var_dump($result);
     } catch (Throwable $exception) {
         echo $exception->getMessage() . PHP_EOL;
+    }
+}
+
+function insertarResultado(\Doctrine\ORM\EntityManagerInterface $entityManager, Result $newResult = null): void
+{
+    if (isset($_POST) && isset($_POST['result']) && isset($_POST['user'])) {
+        $result = $_POST['result'];
+        $userRepository = $entityManager->getRepository(User::class);
+        $user = $userRepository->findOneBy(['username' => $_POST['user']]);
+        $newResult = new Result($result, $user, new DateTime('now'));
+        try {
+            $entityManager->persist($newResult);
+            $entityManager->flush();
+            var_dump($newResult);
+
+        } catch (Throwable $exception) {
+            echo $exception->getMessage() . PHP_EOL;
+        }
+    } else {
+        echo "Result no modificado";
     }
 }
