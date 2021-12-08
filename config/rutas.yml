@@ -6,19 +6,25 @@ ruta_raíz:
     methods:   [ GET ]
 
 ruta_user_list:
-    path:     /users
+    path:     /api/users
     controller: 'funcionListadoUsuarios'
     methods:
       - GET
 
+ruta_create_user_form:
+    path:     /users/create
+    controller: 'formCrearUsuario'
+    methods:
+        - GET
+
 ruta_create_user:
-    path:     /users
+    path:     /api/users
     controller: 'funcionCrearUsuario'
     methods:
         - POST
 
 ruta_user:
-    path:     /users/{name}
+    path:     /api/users/{name}
     controller: 'funcionUsuario'
     defaults:
         name: _default_
@@ -26,7 +32,7 @@ ruta_user:
         - GET
 
 ruta_user_delete:
-    path:     /users/{name}
+    path:     /api/users/{name}
     controller: 'funcionBorrarUsuario'
     defaults:
         name: _default_
@@ -34,13 +40,13 @@ ruta_user_delete:
         - DELETE
 
 ruta_result_list:
-    path:     /results
+    path:     /api/results
     controller: 'funcionResultados'
     methods:
         - GET
 
 ruta_result:
-    path:     /results/{name}
+    path:     /api/results/{name}
     controller: 'funcionResultado'
     defaults:
         name: _default_
