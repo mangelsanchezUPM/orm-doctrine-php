@@ -10,13 +10,13 @@
 use MiW\Results\Entity\User;
 use MiW\Results\Entity\Result;
 use MiW\Results\Utility\DoctrineConnector;
+use \Doctrine\ORM\EntityManagerInterface;
 
 function funcionHomePage()
 {
     global $routes;
 
     $rutaListadoUsuario = $routes->get('ruta_user_list')->getPath();
-    $rutaFormCrearUsuario = $routes->get('ruta_create_user_form')->getPath();
     $rutaListadoResultados = $routes->get('ruta_result_list')->getPath();
 
     echo <<< ____MARCA_FIN
@@ -205,7 +205,7 @@ function funcionBorrarUsuario(string $name)
     try {
         $entityManager->remove($user);
         $entityManager->flush();
-        echo "Usuario borrado: " . PHP_EOL;
+        echo "Usuario borrado: " . $user->getUsername() . PHP_EOL;
         var_dump($user);
     } catch (Throwable $exception) {
         echo $exception->getMessage() . PHP_EOL;
@@ -296,7 +296,8 @@ ____MARCA_FIN;
 ____MARCA_FIN;
 }
 
-function funcionCrearResultado() {
+function funcionCrearResultado()
+{
     $entityManager = DoctrineConnector::getEntityManager();
     insertarResultado($entityManager);
     volverInicio();
@@ -310,20 +311,76 @@ function funcionBorrarResultado(string $name)
     try {
         $entityManager->remove($result);
         $entityManager->flush();
-        echo "Resultado borrado: " . PHP_EOL;
+        echo "Resultado borrado: " . $result->getResult() . PHP_EOL;
         var_dump($result);
+        volverInicio();
     } catch (Throwable $exception) {
         echo $exception->getMessage() . PHP_EOL;
     }
 }
 
-function insertarResultado(\Doctrine\ORM\EntityManagerInterface $entityManager, Result $newResult = null): void
+function formModificarResultado(string $resultName)
+{
+    $rutaModificarResultado = "/results/$resultName/update";
+
+    $entityManager = DoctrineConnector::getEntityManager();
+    $resultRepository = $entityManager->getRepository(Result::class);
+    $result = $resultRepository->findOneBy(['result' => $resultName]);
+    $users = $entityManager->getRepository(User::class)->findAll();
+
+    echo <<< ____MARCA_FIN
+    <form method="post" action="$rutaModificarResultado">
+        <h2>Modificación de resultado</h2>
+        <table>
+            <tr><td><label>Número de resultado</label></td> 
+                <td><input type="number" name="result" value="$resultName" required></td></tr>
+            <tr><td><label>Usuario: </label></td> 
+                <td><select name="user">
+____MARCA_FIN;
+    foreach ($users as $user) {
+        $username = $user->getUsername();
+        if ($result->getUser()->getUsername() == $user->getUsername()) {
+            echo "<option selected value='$username'>$username</option>";
+        } else {
+            echo "<option value='$username'>$username</option>";
+        }
+    }
+    echo <<< ____MARCA_FIN
+            </select></td></tr>
+        <tr>
+            <td colspan="2">
+                <button type="submit">Modificar</button>
+            </td>
+        </tr>
+    </table>
+   </form>
+____MARCA_FIN;
+    volverInicio();
+
+}
+
+function funcionModificarResultado(string $name)
+{
+    $entityManager = DoctrineConnector::getEntityManager();
+    $resultRepository = $entityManager->getRepository(Result::class);
+    $result = $resultRepository->findOneBy(['result' => $name]);
+    insertarResultado($entityManager, $result);
+    volverInicio();
+}
+
+function insertarResultado(EntityManagerInterface $entityManager, Result $newResult = null): void
 {
     if (isset($_POST) && isset($_POST['result']) && isset($_POST['user'])) {
         $result = $_POST['result'];
         $userRepository = $entityManager->getRepository(User::class);
         $user = $userRepository->findOneBy(['username' => $_POST['user']]);
-        $newResult = new Result($result, $user, new DateTime('now'));
+        if (is_null($newResult)) {
+            $newResult = new Result($result, $user, new DateTime('now'));
+        } else {
+            $newResult->setResult($_POST['result']);
+            $newResult->setUser($user);
+            $newResult->setTime(new DateTime('now'));
+        }
         try {
             $entityManager->persist($newResult);
             $entityManager->flush();
