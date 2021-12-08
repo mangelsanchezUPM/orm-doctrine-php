@@ -11,6 +11,12 @@ ruta_user_list:
     methods:
       - GET
 
+ruta_create_user:
+    path:     /users
+    controller: 'funcionCrearUsuario'
+    methods:
+        - POST
+
 ruta_user:
     path:     /users/{name}
     controller: 'funcionUsuario'
@@ -18,4 +24,25 @@ ruta_user:
         name: _default_
     methods:
         - GET
+
+ruta_user_delete:
+    path:     /users/{name}
+    controller: 'funcionBorrarUsuario'
+    defaults:
+        name: _default_
+    methods:
         - DELETE
+
+ruta_result_list:
+    path:     /results
+    controller: 'funcionResultados'
+    methods:
+        - GET
+
+ruta_result:
+    path:     /results/{name}
+    controller: 'funcionResultado'
+    defaults:
+        name: _default_
+    methods:
+        - GET
