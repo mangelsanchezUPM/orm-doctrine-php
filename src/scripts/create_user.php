@@ -14,11 +14,11 @@ use MiW\Results\Entity\User;
 use MiW\Results\Utility\DoctrineConnector;
 use MiW\Results\Utility\Utils;
 
-if ($argc != 6) {
+if ($argc < 4 || $argc > 6) {
     $fich = basename(__FILE__);
     echo <<< MARCA_FIN
 
-    Usage: $fich <Username> <Email> <Password> <Enabled> <IsAdmin>
+    Usage: $fich <Username> <Email> <Password> [<Enabled>] [<IsAdmin>]
 
 MARCA_FIN;
     exit(0);
@@ -33,8 +33,15 @@ $user = new User();
 $user->setUsername($argv[1]);
 $user->setEmail($argv[2]);
 $user->setPassword($argv[3]);
-$user->setEnabled($argv[4] == "true");
-$user->setIsAdmin($argv[4] == "true");
+$user->setEnabled(true);
+$user->setIsAdmin(false);
+
+if ($argc == 5) {
+    $user->setEnabled($argv[4] == "true");
+}
+if ($argc == 6) {
+    $user->setIsAdmin($argv[5] == "true");
+}
 
 try {
     $entityManager->persist($user);
