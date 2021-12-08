@@ -13,12 +13,13 @@ require dirname(__DIR__, 2) . '/vendor/autoload.php';
 use MiW\Results\Entity\User;
 use MiW\Results\Utility\DoctrineConnector;
 use MiW\Results\Utility\Utils;
-if ($argc != 7 && !is_numeric($argv[1])) {
+if ($argc < 2 || $argc > 7 && !is_numeric($argv[1])) {
     $fich = basename(__FILE__);
     echo <<< MARCA_FIN
 
-    Usage: $fich <UserID> <Username|.> <Email|.> <Password|.> <Enabled|.> <IsAdmin|.>
+    Usage: $fich <UserID> [<Username|.>] [<Email|.>] [<Password|.>] [<Enabled|.>] [<IsAdmin|.>]
     The symbol '.' means that the field will not be updated.
+    Values for Enabled and IsAdmin are considered true only if "true" is assigned.
 
 MARCA_FIN;
     exit(0);

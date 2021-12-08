@@ -19,6 +19,7 @@ if ($argc < 4 || $argc > 6) {
     echo <<< MARCA_FIN
 
     Usage: $fich <Username> <Email> <Password> [<Enabled>] [<IsAdmin>]
+    Values for Enabled and IsAdmin are considered true only if "true" is assigned.
 
 MARCA_FIN;
     exit(0);
